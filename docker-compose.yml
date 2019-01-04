@@ -1,0 +1,29 @@
+version: '3.7'
+services:
+  db:
+    image: 'mysql'
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=suitecrm
+      - MYSQL_USER=suitecrm
+      - MYSQL_DATABASE=suitecrm
+      - MYSQL_PASSWORD=suitecrm
+    ports:
+      - "3306:3306"
+    volumes:
+      - './suitecrm_data_db_db:/var/lib/mysql'
+  suitecrm:
+    image: 'senzil/suitecrm'
+    restart: always
+    environment:
+      - DB_HOST=db
+      - DB_PORT=3306
+      - SUITECRM_DATABASE_USER=bn_suitecrm
+      - SUITECRM_DATABASE_USER=bn_suitecrm
+      - SUITECRM_DATABASE_NAME=suitecrm
+    ports:
+      - '80:80'
+    volumes:
+      - './suitecrm_data:/'
+    depends_on:
+      - mysql

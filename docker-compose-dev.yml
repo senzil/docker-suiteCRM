@@ -1,0 +1,37 @@
+version: '3.7'
+services:
+  db:
+    image: 'mysql'
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=suitecrm
+      - MYSQL_USER=suitecrm
+      - MYSQL_DATABASE=suitecrm
+      - MYSQL_PASSWORD=suitecrm
+    ports:
+      - "3306:3306"
+    volumes:
+      - './suitecrm_data_db:/var/lib/mysql'
+  suitecrm:
+    image: 'senzil/suitecrm:dev'
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        php_version: apache
+        suitecrm_version: 7.10.11
+    restart: always
+    environment:
+      - DB_HOST=db
+      - DB_PORT=3306
+      - SUITECRM_DATABASE_USER=suitecrm
+      - SUITECRM_DATABASE_PASSWORD=suitecrm
+      - SUITECRM_DATABASE_NAME=suitecrm
+    ports:
+      - '80:80'
+    volumes:
+      - './suitecrm_data/upload:/var/www/html/upload:rw'
+      - '/suitecrm_data/conf.d:/var/www/html/conf.d'
+      - '${PWD}/php.suitecrm.ini:/usr/local/etc/php/conf.d/php.suitecrm.ini'
+    depends_on:
+      - db
